@@ -40,6 +40,23 @@ jobs:
       - run: git config --global user.name "Les Orchard"
       - run: npm run release:dev
 
+  deploy_stage:
+    docker:
+      - image: circleci/python:3
+    working_directory: ~/FirefoxColor
+    environment:
+      DISTRIBUTION_ID: E13WOL5NWQ7K5L
+      S3_BUCKET_NAME: themer-stage-default-resources-s3bucket-1g89lczfku6i1
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          command: |
+            sudo pip install awscli
+            aws s3 sync --exclude __version__ build/web/ s3://${S3_BUCKET_NAME}/ --delete --dryrun
+            aws s3 cp --content-type application/json build/web/__version__ s3://${S3_BUCKET_NAME}/__version__ --dryrun
+            aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID} --paths '/*' --generate-cli-skeleton output
+
 workflows:
   test_and_deploy:
     jobs:
@@ -50,3 +67,9 @@ workflows:
           filters:
             branches:
               only: development
+      - deploy_stage:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only: deploy-stage-on-circleci
