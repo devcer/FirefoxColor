@@ -40,22 +40,31 @@ jobs:
       - run: git config --global user.name "Les Orchard"
       - run: npm run release:dev
 
-  deploy_stage:
+  deploy_to_aws:
+    parameters:
+      access-key-id:
+        type: env_var_name
+      bucket-name:
+        type: env_var_name
+      distribution-id:
+        type: env_var_name
+      secret-access-key:
+        type: env_var_name
     docker:
       - image: circleci/python:3
     working_directory: ~/FirefoxColor
     environment:
-      DISTRIBUTION_ID: E13WOL5NWQ7K5L
-      S3_BUCKET_NAME: themer-stage-default-resources-s3bucket-1g89lczfku6i1
+      AWS_ACCESS_KEY_ID: << parameters.access-key-id >>
+      AWS_SECRET_ACCESS_KEY: << parameters.secret-access-key >>
     steps:
       - attach_workspace:
           at: .
       - run:
           command: |
             sudo pip install awscli
-            aws s3 sync --exclude __version__ build/web/ s3://${S3_BUCKET_NAME}/ --delete --dryrun
-            aws s3 cp --content-type application/json build/web/__version__ s3://${S3_BUCKET_NAME}/__version__ --dryrun
-            aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID} --paths '/*' --generate-cli-skeleton output
+            aws s3 sync --exclude __version__ build/web/ s3://<< parameters.bucket-name >>/ --delete --dryrun
+            aws s3 cp --content-type application/json build/web/__version__ s3://<< parameters.bucket-name >>/__version__ --dryrun
+            aws cloudfront create-invalidation --distribution-id << parameters.distribution-id >> --paths '/*' --generate-cli-skeleton output
 
 workflows:
   test_and_deploy:
@@ -67,7 +76,11 @@ workflows:
           filters:
             branches:
               only: development
-      - deploy_stage:
+      - deploy_to_aws:
+          access-key-id: STAGE_ACCESS_KEY_ID
+          bucket-name: STAGE_BUCKET_NAME
+          distribution-id: STAGE_DISTRIBUTION_ID
+          secret-access-key: STAGE_SECRET_ACCESS_KEY
           requires:
             - build_and_test
           filters:
