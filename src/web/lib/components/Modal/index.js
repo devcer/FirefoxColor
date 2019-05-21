@@ -11,10 +11,12 @@ export const Modal = ({ toggleModal, displayModal, children }) => {
   };
   return (
     <div
+      role="dialog"
       className={classNames("modal", { "modal--display": displayModal })}
       onClick={handleToggle}
     >
       <div
+        role="dialog"
         className="modal__content"
         onClick={event => event.stopPropagation()}
       >

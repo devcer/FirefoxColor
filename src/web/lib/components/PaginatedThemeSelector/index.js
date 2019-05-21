@@ -47,7 +47,7 @@ export const PaginatedThemeSelector = ({
                 onClick={() => onDelete(key)}
                 title="Delete"
               >
-                <img src={iconClose} />
+                <img alt="Delete" src={iconClose} />
               </button>
             )}
             <Browser

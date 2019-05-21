@@ -3,6 +3,7 @@ extends:
 - plugin:import/recommended
 - plugin:mozilla/recommended
 - plugin:react/recommended
+- plugin:jsx-a11y/recommended
 
 env:
   browser: true
@@ -15,6 +16,8 @@ settings:
 
 plugins:
   - babel
+  - jsx-a11y
+  - react
 
 parser: babel-eslint
 

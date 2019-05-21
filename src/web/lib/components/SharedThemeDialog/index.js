@@ -20,7 +20,7 @@ export const SharedThemeDialog = ({
     }
   };
   return (
-    <div className="shared-theme-dialog-wrapper" onClick={onClickBackdrop}>
+    <div role="dialog" className="shared-theme-dialog-wrapper" onClick={onClickBackdrop}>
       <div className="shared-theme-dialog">
         <div className="preview">
           <Browser {...{ size: "medium", theme: pendingTheme }} />

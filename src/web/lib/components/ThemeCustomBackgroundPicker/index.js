@@ -210,7 +210,7 @@ class ThemeCustomBackgroundSelector extends React.Component {
             }-${alignment}`
           )}
         >
-          <img src={icon} width="13" height="16" />
+          <img alt={`Align ${alignment}`} src={icon} width="13" height="16" />
         </button>
       );
     };
